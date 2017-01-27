@@ -38,17 +38,17 @@ Install required dependencies
 
 ##Running the program
 
-You will need two terminal to run our application
+You will need two terminal to run the application
 
 In the first terminal run consumer.py. open a terminal and type:
 
-(env)$ python consumer.py
+`(env)$ python consumer.py`
 
 
 
 In the second terminal run producer.py and pass in a message "hello word"
 
-(env)$ python producer.py "hello world"
+`(env)$ python producer.py "hello world"`
 
 
 
