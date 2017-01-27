@@ -4,8 +4,11 @@ Kafka is an opensource distributed streaming platform  that simplifies data inte
 A stream is a pipeline to which your applications can push data. You can find more info on kafka's [Official site](https://kafka.apache.org/documentation.html#gettingStarted)
 
 Kafka system has three main component:
+
 1. A Producer:  The service which produces the data that needs to be broadcast
+
 2. A Broker:  This is Kafka itself , which acts as a middle man between the producer and the consumer. It utilises the power of API's to get and broadcast data
+
 3. A Consumer: The service that utilises the data which the broker will broadcast.
 
 ### Installing Kafka
