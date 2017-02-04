@@ -1,19 +1,38 @@
-## producer.py
-
+# producer.py
+import cv2
 from kafka import SimpleProducer, KafkaClient
-from sys import argv
 
-# Connect to kafka-broker : provide the port at which kafka is running
-kafka = KafkaClient('0.0.0.0:9092')
-
-# couple our broker to our producer
+#  connect to Kafka
+kafka = KafkaClient('localhost:9092')
 producer = SimpleProducer(kafka)
 
-# add topic
+# Assign a topic
 topic = 'my-topic'
 
-# Capture the message typed on the terminal
-msg = argv[1]
 
-# Emit the message to kafka broker
-producer.send_messages(topic, msg.encode())
+def video_emitter(video):
+    # Open the video
+    video = cv2.VideoCapture(video)
+    print(' emitting.....')
+
+    # read the file
+    while (video.isOpened):
+        # read the image in each frame
+        success, image = video.read()
+
+        # check if the file has read the end
+        if not success:
+            break
+
+        # convert the image png
+        ret, jpeg = cv2.imencode('.png', image)
+
+        # Convert the image to bytes and send to kafka
+        producer.send_messages(topic, jpeg.tobytes())
+    # clear the capture
+    video.release()
+    print('done emitting')
+
+
+if __name__ == '__main__':
+    video_emitter('video.mp4')

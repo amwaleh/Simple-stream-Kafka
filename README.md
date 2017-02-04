@@ -36,7 +36,7 @@ Create a virtualenv and activate it inside your project directory:
 * `$ virtualenv env && source env/bin/activate`
 
 Install required dependencies
-* `pip install kafka-python`
+* `pip install kafka-python opencv-python Flask`
 
 
 ##Running the program
@@ -45,14 +45,14 @@ You will need two terminal to run the application
 
 In the first terminal run consumer.py. open a terminal and type:
 
-`(env)$ python consumer.py`
+`(env)$ python producer.py`
 
 
 
 In the second terminal run producer.py and pass in a message "hello word"
 
-`(env)$ python producer.py "hello world"`
+`(env)$ python consumer.py
 
 
 
-Observe what happens on the terminal running consumer.py terminal The message passed in the producer.py should appear in it
+Open your browser and navigate to `http://0.0.0.0:5000`
