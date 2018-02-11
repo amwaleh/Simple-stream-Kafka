@@ -39,7 +39,7 @@ Install required dependencies
 * `pip install kafka-python opencv-python Flask`
 
 
-##Running the program
+## Running the program
 
 You will need two terminal to run the application
 
