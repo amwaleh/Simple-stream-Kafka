@@ -5,19 +5,19 @@ A stream is a pipeline to which your applications can push data. You can find mo
 
 Kafka system has three main component:
 
-1. A Producer:  The service which produces the data that needs to be broadcast
+1. A Producer: The service which produces the data that needs to be broadcast
 
-2. A Broker:  This is Kafka itself , which acts as a middle man between the producer and the consumer. It utilises the power of API's to get and broadcast data
+2. A Broker: This is Kafka itself, which acts as a middle man between the producer and the consumer. It utilises the power of API's to get and broadcast data
 
-3. A Consumer: The service that utilises the data which the broker will broadcast.
+3. A Consumer: The service that utilises the data which the broker will broadcast
 
 ### Installing Kafka
 
 - If you are running mac OSX simply type `brew install kafka`
-    - once done installing run `homebrew services start kafka`
+    - once done installing run `brew services start kafka`
 
 - for linux user follow installation instruction from [here](https://www.tutorialspoint.com/apache_kafka/apache_kafka_installation_steps.htm)
-- By default Kafka runs on port `91092`
+- By default Kafka runs on port `9092`
 
 
 ### Project requirements:
@@ -30,7 +30,7 @@ Kafka system has three main component:
 
 #### setting up :
 clone this repo:
-*  ` $ git clone git@github.com:andela-amwaleh/Simple-stream-Kafka.git`
+* `$ git clone git@github.com:andela-amwaleh/Simple-stream-Kafka.git`
 
 Create a virtualenv and activate it inside your project directory:
 * `$ virtualenv env && source env/bin/activate`
@@ -51,7 +51,7 @@ In the first terminal run consumer.py. open a terminal and type:
 
 In the second terminal run producer.py and pass in a message "hello word"
 
-`(env)$ python consumer.py
+`(env)$ python consumer.py`
 
 
 
