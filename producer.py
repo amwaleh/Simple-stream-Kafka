@@ -24,7 +24,7 @@ def video_emitter(video):
         ret, jpeg = cv2.imencode('.png', image)
         # Convert the image to bytes and send to kafka
         producer.send(topic, jpeg.tobytes())
-        # To reduce CPU usage create sleep time of 0.2sec  
+        # To reduce CPU usage create sleep time of 0.2sec
         time.sleep(0.2)
     # clear the capture
     video.release()
