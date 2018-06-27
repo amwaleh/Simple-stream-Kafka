@@ -22,7 +22,7 @@ We are going to build a simple streaming  application, that  streams a video fil
 
  - Basic knowledge of python
  - python 3
- - Kafka [installed]((https://www.tutorialspoint.com/apache_kafka/apache_kafka_installation_steps.htm))
+ - Kafka [installed](https://www.tutorialspoint.com/apache_kafka/apache_kafka_installation_steps.htm)
  - [Virtualenv](https://virtualenv.pypa.io/en/stable/).
  - [pip](https://pip.pypa.io/en/stable/installing/) installed
 
@@ -34,7 +34,7 @@ We are going to build a simple streaming  application, that  streams a video fil
 - for linux user follow installation instruction from [here](https://www.tutorialspoint.com/apache_kafka/apache_kafka_installation_steps.htm)
 - By default Kafka runs on port `9092`
 
-This project aims to introduce you to the basics of Kafka and Messaging,  and assumes you have basic knowledge on Python.
+This project aims to introduce you to the basics of Kafka and Messaging, and assumes you have basic knowledge in Python.
 
 
 ## Setting up :
@@ -45,7 +45,7 @@ Our project will consist of:
 - and finally Kafka as the broker
 
 Create project directory  :
-*  ` $ mkdir kafka  &&  cd kafka`
+* `$ mkdir kafka && cd kafka`
 
 Create a virtualenv and activate it inside your project directory:
 * `$ virtualenv env && source env/bin/activate`
@@ -58,28 +58,26 @@ We need to install [Flask](http://flask.pocoo.org/) and [opencv](http://opencv-p
 ## Creating  the Producer
 
 A producer is a service that sends messages to the kafka broker.
-One thing to note is , the producer is not concerned with the various systems that will eventually consume or load the broadcast data.
+One thing to note is,the producer is not concerned with the various systems that will eventually consume or load the broadcast data.
 
 **Lets create it**
 
-First require the `Kafkaclient` from `kafka`, this will help us connect to the kafka-broker by passing in the kafka url.
-
-Next import the simpleProducer method from kafka, What this does is, it  connects to kafka broker through the address `localhost:9092` (default address for kafka) and presents us with the `send_messages` function that will emit / send our message.
+It requires the KafkaProducer method from kafka, What this does is, it connects to kafka broker through the address `localhost:9092` (default address for kafka) and presents us with the `send` function that will emit / send our message.
 
 Next we need to declare our `Topic`.
 
 Kafka uses topics to establish connection between consumers requests and the messages. Furthermore it uses this topics to organise and differentiate the various messages that are being broadcast.
 
-A Consumer  must have the same topic as the message it needs to consume.
+A Consumer must have the same topic as the message it needs to consume.
 
 **Creating the Message:**
 
-The message will consist of images sent in binary form. To achieve this we use **Opencv ** library. Opencv enables us to read our movie file and convert it into bytes, before sending it to Kafka.
+The message will consist of images sent in binary form. To achieve this we use **Opencv** library. Opencv enables us to read our movie file and convert it into bytes, before sending it to Kafka.
 We need to create a function that will take in a video file, read the file and converting the file  into bytes before sending it  to kafka.  For this tutorial, I advise placing the video file in the same folder as the producer.
 
-**Sending  the message:**
+**Sending the message:**
 
-Once the file  has been read it needs to be sent to Kafka.This is achieved by calling the `producer` instance and invoking the `send_messages()` function. `send_messages` takes `a topic` and `message` argument.
+Once the file  has been read it needs to be sent to Kafka.This is achieved by calling the `producer` instance and invoking the `send()` function. `send` takes `a topic` and `message` argument.
 Nb: the message has to in byte format hence we encode the image using `jpeg.tobytes()`
 
 Here is the full producer code
@@ -88,13 +86,11 @@ Here is the full producer code
 # producer.py
 import time
 import cv2
-from kafka import SimpleProducer, KafkaClient
+from kafka import KafkaProducer
 #  connect to Kafka
-kafka = KafkaClient('localhost:9092')
-producer = SimpleProducer(kafka)
+producer = KafkaProducer(bootstrap_servers='localhost:9092')
 # Assign a topic
 topic = 'my-topic'
-
 
 def video_emitter(video):
     # Open the video
@@ -105,31 +101,28 @@ def video_emitter(video):
     while (video.isOpened):
         # read the image in each frame
         success, image = video.read()
-
-        # check if the file has read the end
+        # check if the file has read to the end
         if not success:
             break
-
         # convert the image png
         ret, jpeg = cv2.imencode('.png', image)
         # Convert the image to bytes and send to kafka
-        producer.send_messages(topic, jpeg.tobytes())
-        # To reduce CPU usage create sleep time of 0.2sec
+        producer.send(topic, jpeg.tobytes())
+        # To reduce CPU usage create sleep time of 0.2sec  
         time.sleep(0.2)
     # clear the capture
     video.release()
     print('done emitting')
 
-
 if __name__ == '__main__':
     video_emitter('video.mp4')
 ```
 
-Great !! we done with the producer
+Great!! We're done with the producer
 
 ## Creating the Consumer
 
-The consumer is a service that listens and consumes what the kafka broker broadcasts. Each consumer service listens for a specific topic  given to it.
+The consumer is a service that listens and consumes what the kafka broker broadcasts. Each consumer service listens for a specific topic given to it.
 
 Our consumer will listen to the all messages with a topic `my-topic`  from Kafka and  display them. We shall be using [Flask](http://flask.pocoo.org/) - A python microframework  to display the recieved video images.
 
@@ -146,7 +139,7 @@ We need to continuously get updates of new messages from the broker. To achieve 
 
 Note, the images will be sent in part and for the purpose of having a stream where each part replaces the previous part the `multipart/x-mixed-replace content` type must be used when displaying the images.
 
-Here is the consumer.py code
+Here is the `consumer.py` code
 
 ```python
 from flask import Flask, Response
@@ -183,13 +176,13 @@ First and foremost make sure Kafka is working by running `brew services kafka`.
 
 next open two terminal
 
-- In the first terminal run  `producer`.
-  open a terminal and type:
+- In the first terminal run `producer.py`.
+  Open a terminal and type:
 
   `(env)$ python producer.py`
   ![](https://cdn.scotch.io/15775/T1cgynmnTj2Vtz0Ih8Dv_producer.jpg)
 
-- In the second terminal run `consumer.py`
+- In the second terminal run `consumer.py`.
 
   `(env)$ python consumer.py`
   ![](https://cdn.scotch.io/15775/tZD4cMBqTamBmzoE3sXE_consumer.jpg)
@@ -210,17 +203,16 @@ Next open your browser and navigate to `http://0.0.0.0:5000` ,
 
 ## Where to use Kafka:
 
-- Microservices : If  you are developing your software application using Micro-Services, Kafka has proved to be the best conduit for the various services that need to continously communicate asynchronously with each other.
+- Microservices: If you are developing your software application using Micro-Services, Kafka has proved to be the best conduit for the various services that need to continously communicate asynchronously with each other.
 
-- Databases:  Data warehouse constantly need to backup or replication data. One way of not of dumping whole databases is to create kafka producers and consumers that detect and  save only changes (diff) made to the databases . Moreover producers can be used together with ORM signals  to trigger the replication process.
+- Databases: Data warehouse constantly need to backup or replication data. One way of not of dumping whole databases is to create kafka producers and consumers that detect and  save only changes (diff) made to the databases . Moreover producers can be used together with ORM signals  to trigger the replication process.
 
-- Log  Data:  Producers can be embeded on websites to collect  click events or page views in realtime.
+- Log Data: Producers can be embeded on websites to collect  click events or page views in realtime.
 - security cameras
-- Sensor and  device data
+- Sensor and device data
 - stock ticker
 
 ## Conclusion :
 
  Kafka is an awesome messaging system that is fast, scalable and easy to use.  You only need to  know which topic to publish and which topic you to consume in order to use the system.
-we created a simple python streaming project demonstrates the advantages of streaming data,How fast it can be and how Kafka works as a broker.
-
+we created a simple python streaming project demonstrates the advantages of streaming data, how fast it can be and how Kafka works as a broker.
