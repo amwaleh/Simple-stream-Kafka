@@ -30,7 +30,7 @@ Kafka system has three main component:
 
 #### setting up :
 clone this repo:
-* `$ git clone git@github.com:andela-amwaleh/Simple-stream-Kafka.git`
+* `$ git clone git@github.com:amwaleh/Simple-stream-Kafka.git`
 
 Create a virtualenv and activate it inside your project directory:
 * `$ virtualenv env && source env/bin/activate`
