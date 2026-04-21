@@ -1,58 +1,66 @@
-![](https://cdn.scotch.io/15775/PRPg1998TfO6VKXTeaTz_illustration.jpg)
-### What is kafka
-Kafka is an opensource distributed streaming platform  that simplifies data intergration between systems.
-A stream is a pipeline to which your applications can push data. You can find more info on kafka's [Official site](https://kafka.apache.org/documentation.html#gettingStarted)
+# Simple Kafka Video Stream
 
-Kafka system has three main component:
+![Kafka Video Streaming](https://cdn.scotch.io/15775/PRPg1998TfO6VKXTeaTz_illustration.jpg)
 
-1. A Producer: The service which produces the data that needs to be broadcast
+A minimal example of **real-time video streaming with Apache Kafka** — a producer reads a video file frame-by-frame and publishes JPEG frames to a Kafka topic, while a Flask consumer serves them as an MJPEG stream in the browser.
 
-2. A Broker: This is Kafka itself, which acts as a middle man between the producer and the consumer. It utilises the power of API's to get and broadcast data
+## What is Kafka?
 
-3. A Consumer: The service that utilises the data which the broker will broadcast
+Kafka is an open-source distributed streaming platform that simplifies data integration between systems.
+See the [official docs](https://kafka.apache.org/documentation.html#gettingStarted) for more info.
+
+**Three main components:**
+
+1. **Producer** — the service that publishes data
+2. **Broker** — Kafka itself, the middleware that stores and delivers messages
+3. **Consumer** — the service that reads and processes the data
+
+## Prerequisites
+
+- Python 3.10+
+- Apache Kafka running on `localhost:9092` (default)
 
 ### Installing Kafka
 
-- If you are running mac OSX simply type `brew install kafka`
-    - once done installing run `brew services start kafka`
+- **macOS:** `brew install kafka && brew services start kafka`
+- **Linux:** follow the [official quickstart](https://kafka.apache.org/quickstart)
+- **Docker:** `docker run -d --name kafka -p 9092:9092 apache/kafka`
 
-- for linux user follow installation instruction from [here](https://www.tutorialspoint.com/apache_kafka/apache_kafka_installation_steps.htm)
-- By default Kafka runs on port `9092`
+## Setup
 
+```bash
+git clone https://github.com/amwaleh/Simple-stream-Kafka.git
+cd Simple-stream-Kafka
+python -m venv venv && source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
 
-### Project requirements:
- - Basic knowledge of python
- - python 3
- - Kafka [installed]((https://www.tutorialspoint.com/apache_kafka/apache_kafka_installation_steps.htm))
- - [Virtualenv](https://virtualenv.pypa.io/en/stable/).
- - pip installed
+## Running
 
+You need **two terminals**:
 
-#### setting up :
-clone this repo:
-* `$ git clone git@github.com:amwaleh/Simple-stream-Kafka.git`
+**Terminal 1 — Producer** (reads `video.mp4` and sends frames to Kafka):
 
-Create a virtualenv and activate it inside your project directory:
-* `$ virtualenv env && source env/bin/activate`
+```bash
+python producer.py              # default: video.mp4
+python producer.py myvideo.avi  # or specify a file
+```
 
-Install required dependencies
-* `pip install kafka-python opencv-python Flask`
+**Terminal 2 — Consumer** (Flask server that streams frames to the browser):
 
+```bash
+python consumer.py
+```
 
-## Running the program
+Open your browser at **http://localhost:5000**
 
-You will need two terminal to run the application
+## Configuration
 
-In the first terminal run consumer.py. open a terminal and type:
+All settings can be overridden with environment variables:
 
-`(env)$ python producer.py`
-
-
-
-In the second terminal run producer.py and pass in a message "hello word"
-
-`(env)$ python consumer.py`
-
-
-
-Open your browser and navigate to `http://0.0.0.0:5000`
+| Variable | Default | Description |
+|---|---|---|
+| `KAFKA_BROKER` | `localhost:9092` | Kafka bootstrap server |
+| `KAFKA_TOPIC` | `video-stream` | Kafka topic name |
+| `FRAME_INTERVAL` | `0.04` | Seconds between frames (~25 fps) |
+| `PORT` | `5000` | Flask server port |
