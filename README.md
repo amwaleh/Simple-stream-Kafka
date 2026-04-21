@@ -15,6 +15,78 @@ See the [official docs](https://kafka.apache.org/documentation.html#gettingStart
 2. **Broker** — Kafka itself, the middleware that stores and delivers messages
 3. **Consumer** — the service that reads and processes the data
 
+## Architecture
+
+### High-Level Flow
+
+```mermaid
+flowchart LR
+    A["🎬 Video File\n(video.mp4)"] -->|"OpenCV\nread frames"| B["📤 Producer\n(producer.py)"]
+    B -->|"JPEG bytes"| C["📦 Kafka Broker\n(localhost:9092)"]
+    C -->|"topic: video-stream"| D["📥 Consumer\n(consumer.py)"]
+    D -->|"MJPEG stream"| E["🌐 Browser\n(localhost:5000)"]
+```
+
+### Detailed Data Flow
+
+```mermaid
+sequenceDiagram
+    participant V as 🎬 Video File
+    participant P as 📤 Producer
+    participant K as 📦 Kafka Broker
+    participant C as 📥 Consumer<br/>(Background Thread)
+    participant F as 🖥️ Flask Server
+    participant B as 🌐 Browser
+
+    P->>V: Open video capture
+    loop Every frame (~25 fps)
+        V->>P: Read frame (BGR image)
+        P->>P: Encode frame as JPEG
+        P->>K: Send JPEG bytes to topic
+    end
+    P->>K: Flush & close
+
+    Note over C,K: Runs continuously in background
+    loop Consume messages
+        K->>C: Deliver message
+        C->>C: Store latest frame in shared buffer
+    end
+
+    B->>F: GET /
+    loop Stream response
+        F->>F: Read latest frame from buffer
+        F->>B: Yield MJPEG frame
+    end
+```
+
+### Component Architecture
+
+```mermaid
+graph TB
+    subgraph Producer ["producer.py"]
+        P1[OpenCV VideoCapture] --> P2[JPEG Encoder]
+        P2 --> P3[KafkaProducer]
+    end
+
+    subgraph Broker ["Kafka Broker"]
+        T[Topic: video-stream<br/>Partition 0]
+    end
+
+    subgraph Consumer ["consumer.py"]
+        C1[KafkaConsumer<br/>Background Thread]
+        C2[Shared Frame Buffer<br/>Thread-safe]
+        C3[Flask HTTP Server]
+        C1 --> C2
+        C2 --> C3
+    end
+
+    P3 -->|publish| T
+    T -->|subscribe| C1
+    C3 -->|"multipart/x-mixed-replace"| B1[Browser Client 1]
+    C3 -->|"multipart/x-mixed-replace"| B2[Browser Client 2]
+    C3 -->|"multipart/x-mixed-replace"| B3[Browser Client N]
+```
+
 ## Prerequisites
 
 - Python 3.10+
